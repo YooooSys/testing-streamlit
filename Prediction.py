@@ -7,7 +7,9 @@ import numpy as np
 from tensorflow.keras.models import load_model
 
 # Load mô hình đã huấn luyện
-model = tf.keras.models.load_model("Model_v4.1.keras")
+model_path = os.path.abspath("Model_v4.1.keras")
+
+model = tf.keras.models.load_model(model_path)
 
 def add_padding(digit, padding):
     padded_digit = cv2.copyMakeBorder(digit, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=0)
