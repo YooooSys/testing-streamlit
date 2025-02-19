@@ -21,7 +21,7 @@ if uploaded_file is not None:
 
     result = detect_pic(preprocessed_image)
 
-    image = Image.open(result)
+    image = Image.fromarray(result)
     
     # Display the image
     st.image(image, caption='Result', use_container_width=True)
