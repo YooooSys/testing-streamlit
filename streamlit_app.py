@@ -1,3 +1,8 @@
+import os
+import streamlit as st
+
+st.write("Files in Current Directory:", os.listdir("."))  # Show available files
+
 import streamlit as st
 from PIL import Image
 from Prediction import preprocess_image, detect_pic

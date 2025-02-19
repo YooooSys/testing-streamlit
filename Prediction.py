@@ -96,7 +96,6 @@ def preprocess_image(image, max_size):
     return image
 
 # Đường dẫn đến ảnh cần nhận diện
-image_path = 'image/bigtest/big_test.jpg'
 
 # Tiền xử lý ảnh
 def contrast_up(image):
