@@ -1,8 +1,8 @@
-import os
-import streamlit as st
 
-st.write("Files in Current Directory:", os.listdir("."))  # Show available files
-
+model_path = os.path.abspath("Model_v4-1.keras")
+if not os.path.exists(model_path):
+    st.error(f"Error: Model file not found at {model_path}. Please upload the file or check the path.")
+    
 import streamlit as st
 from PIL import Image
 from Prediction import preprocess_image, detect_pic
@@ -12,9 +12,6 @@ import os
 # Title of the app
 st.title("Digit Recognizer")
 
-model_path = os.path.abspath("Model_v4-1.keras")
-if not os.path.exists(model_path):
-    st.error(f"Error: Model file not found at {model_path}. Please upload the file or check the path.")
 
 # File uploader widget
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
