@@ -1,14 +1,10 @@
 
 import os
 import streamlit as st
-
-model_path = os.path.abspath("Model_v4-1.keras")
-if os.path.exists(model_path):
-    st.error(f"Error: Model file not found at {model_path}. Please upload the file or check the path.")
-    
 from PIL import Image
 from Prediction import preprocess_image, detect_pic
 import numpy as np
+
 # Title of the app
 st.title("Digit Recognizer")
 
