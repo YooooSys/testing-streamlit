@@ -2,3 +2,4 @@ streamlit
 tensorflow==2.12.1
 opencv-python-headless
 paddleocr
+paddlepaddle
