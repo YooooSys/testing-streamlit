@@ -1,0 +1,1 @@
+pre_trained_model_path = "Model_v4-1.keras"

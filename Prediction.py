@@ -1,29 +1,22 @@
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 import tensorflow as tf
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
 
+from image_processing import contrast_up
+import path_holder
+from bounding_box import draw_bounding_box, adjust_bounding_box, add_padding
+
 # Load mô hình đã huấn luyện
-model_path = os.path.abspath("Model_v4-1.keras")
+model_path = os.path.abspath(path_holder.pre_trained_model_path)
 
 model = tf.keras.models.load_model(model_path)
 
-def add_padding(digit, padding):
-    padded_digit = cv2.copyMakeBorder(digit, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=0)
-    return padded_digit
-
-def adjust_bounding_box(x, y, w, h, padding=7):
-    x -= padding
-    y -= padding
-    w += 2 * padding
-    h += 2 * padding
-    return x, y, w, h
-
-def detect_pic(image_):
-    image = contrast_up(image_)
-
+def detection(image):
+    image_ = contrast_up(image)
     # blurred = cv2.GaussianBlur(image, (5, 5), 0)
 
     _, binary = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
@@ -45,11 +38,7 @@ def detect_pic(image_):
         x, y, w, h = adjust_bounding_box(x, y, w, h, padding)
         
         #Đảm bảo bounding box không vượt quá kích thước ảnh
-        x = max(0, x)
-        y = max(0, y)
-        w = min(w, image.shape[1] - x)
-        h = min(h, image.shape[0] - y)
-        
+        bbox = (max(0, x), max(0, y), min(w, image.shape[1] - x), min(h, image.shape[0] - y)) #(x, y, w, h)
         #Cắt ảnh chữ số
         digit = binary[y:y+h, x:x+w]
         
@@ -71,34 +60,6 @@ def detect_pic(image_):
         # plt.show()
 
         #Vẽ bounding box và kết quả lên ảnh
-        cv2.rectangle(image_out, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.putText(image_out, str(digit_label), (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-    
+        image_out = draw_bounding_box(image_out, bbox, digit_label)
+
     return image_out
-    
-def preprocess_image(image, max_size):
-    # Đọc ảnh
-    image = cv2.imdecode(image, cv2.IMREAD_GRAYSCALE)
-    if image is None:
-        print("Không thể đọc ảnh.")
-        return None
-
-    # Lấy kích thước ảnh
-    height, width = image.shape
-
-    # Tính tỉ lệ resize
-    if max(height, width) > max_size:
-        scale = max_size / max(height, width)
-        new_width = int(width * scale)
-        new_height = int(height * scale)
-        image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_AREA)
-
-    return image
-
-# Đường dẫn đến ảnh cần nhận diện
-
-# Tiền xử lý ảnh
-def contrast_up(image):
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    return clahe.apply(image)
-
