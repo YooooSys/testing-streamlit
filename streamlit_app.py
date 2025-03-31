@@ -4,7 +4,6 @@ from Prediction import detection
 from image_processing import preprocess_image
 import numpy as np
 import cv2
-from paddleocr import PaddleOCR
 
 
 def image_resizer(image, max_width=1920, max_height=1000):
@@ -44,38 +43,3 @@ if st.button("Digit Recognition using contour"):
         
     else:
         st.write("Please upload an image file.")
-
-if st.button("Detect text"):
-
-    if uploaded_file is not None:
-        ocr = PaddleOCR(use_angle_cls=True , rec_char_type="en", det_db_score_mode="slow")
-
-        # Loading and resizing image if it's too large
-        image = cv2.imread(uploaded_file.read())
-
-        image = image_resizer(image)
-
-        _, binary = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY_INV)
-
-        # Apply dilation to separate characters
-        kernel = np.ones((2,2   ), np.uint8)
-        dilated = cv2.dilate(binary, kernel, iterations=1)
-
-        result = ocr.ocr(image, cls=True)
-
-        result = result[0] 
-
-        # get boxes data boxes: [ [[x1, y1], [x2, y2], [x3, y3], [x4, y4]], 
-        #                         [......................................], ... ]
-        boxes = [line[0] for line in result]
-        for box in boxes:
-            
-            box = np.array([(int(point[0]), int(point[1])) for point in box])
-            
-            #draw outline from given points info
-            cv2.polylines(image, [box], isClosed=True, color=(0, 255, 0), thickness=2)
-
-        st.image(image, caption='Result', use_container_width=True)
-
-    else:
-        st.write("Please upload an image file")
